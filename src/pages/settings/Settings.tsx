@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { Bell, Moon, Sun, Monitor, Shield, Laptop } from 'lucide-react'
 
 // Mock Switch Component since we don't have shadcn ui switch yet
@@ -113,7 +112,7 @@ export default function Settings() {
                             <MockSwitch id="data-sharing" checked={true} />
                         </div>
                         <div className="pt-4 flex justify-end">
-                            <Button variant="destructive" variant="outline" className="text-destructive hover:bg-destructive/10">Delete Account</Button>
+                            <Button variant="outline" className="text-destructive hover:bg-destructive/10">Delete Account</Button>
                         </div>
                     </CardContent>
                 </Card>
