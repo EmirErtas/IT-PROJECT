@@ -67,12 +67,25 @@ export default function KanbanBoard() {
         }
     }
 
-    const handleDrop = (taskId: string, newStatus: TaskStatus) => {
+    const handleDrop = async (taskId: string, newStatus: TaskStatus) => {
+        // Optimistic update
         setTasks((prev) =>
             prev.map((task) =>
                 task.id === taskId ? { ...task, status: newStatus } : task
             )
         )
+
+        const { error } = await supabase
+            .from('tasks')
+            .update({ status: newStatus })
+            .eq('id', taskId)
+
+        if (error) {
+            console.error('Error updating task status:', error)
+            toast(`Failed to update task status: ${error.message}`, 'error')
+            // Revert on error
+            fetchTasks()
+        }
     }
 
     return (
