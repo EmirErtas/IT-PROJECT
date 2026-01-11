@@ -98,7 +98,7 @@ export default function ProjectList() {
                                 <span className="px-2.5 py-0.5 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">
                                     {project.status}
                                 </span>
-                                <span>{project.taskCount} tasks</span>
+                                <span>{project.tasks?.length || project.taskCount || 0} tasks</span>
                             </div>
 
                             {/* Progress Bar Placeholder */}
