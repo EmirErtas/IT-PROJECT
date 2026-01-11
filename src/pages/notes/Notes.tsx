@@ -56,27 +56,26 @@ export default function Notes() {
                     <div className="h-12 w-12 rounded-full bg-muted group-hover:bg-primary/20 flex items-center justify-center transition-colors">
                         <Plus className="h-6 w-6 text-muted-foreground group-hover:text-primary" />
                     </div>
-
-                    <Modal isOpen={isAddNoteOpen} onClose={() => setAddNoteOpen(false)} title="New Note">
-                        <div className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="note-title">Title</Label>
-                                <Input id="note-title" placeholder="Note title" />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="note-content">Content</Label>
-                                <textarea className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="Note content..." />
-                            </div>
-                            <div className="flex justify-end gap-2">
-                                <Button variant="outline" onClick={() => setAddNoteOpen(false)}>Cancel</Button>
-                                <Button onClick={() => setAddNoteOpen(false)}>Create Note</Button>
-                            </div>
-                        </div>
-                    </Modal>
+                    <span className="mt-2 font-medium text-muted-foreground group-hover:text-primary">Create New Note</span>
+                </button>
             </div>
-            <span className="mt-2 font-medium text-muted-foreground group-hover:text-primary">Create New Note</span>
-        </button>
-            </div >
+
+            <Modal isOpen={isAddNoteOpen} onClose={() => setAddNoteOpen(false)} title="New Note">
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="note-title">Title</Label>
+                        <Input id="note-title" placeholder="Note title" />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="note-content">Content</Label>
+                        <textarea className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="Note content..." />
+                    </div>
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => setAddNoteOpen(false)}>Cancel</Button>
+                        <Button onClick={() => setAddNoteOpen(false)}>Create Note</Button>
+                    </div>
+                </div>
+            </Modal>
         </div >
     )
 }

@@ -69,7 +69,7 @@ export default function KanbanBoard() {
                     />
                 </div>
             </div>
-            </div>
+
 
             <Modal isOpen={isAddTaskModalOpen} onClose={() => setIsAddTaskModalOpen(false)} title="New Task">
                 <div className="space-y-4">
@@ -78,8 +78,8 @@ export default function KanbanBoard() {
                         <Input id="title" placeholder="Enter task title" />
                     </div>
                     <div className="flex justify-end gap-2">
-                         <Button variant="outline" onClick={() => setIsAddTaskModalOpen(false)}>Cancel</Button>
-                         <Button onClick={() => setIsAddTaskModalOpen(false)}>Create Task</Button>
+                        <Button variant="outline" onClick={() => setIsAddTaskModalOpen(false)}>Cancel</Button>
+                        <Button onClick={() => setIsAddTaskModalOpen(false)}>Create Task</Button>
                     </div>
                 </div>
             </Modal>

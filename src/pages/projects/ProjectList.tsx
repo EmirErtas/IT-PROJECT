@@ -77,17 +77,17 @@ export default function ProjectList() {
                     <span>Create New Project</span>
                 </Button>
             </div>
-            </div>
+
 
             <Modal isOpen={isCreateOpen} onClose={() => setCreateOpen(false)} title="New Project">
                 <div className="space-y-4">
                     <div className="space-y-2">
-                         <Label htmlFor="name">Project Name</Label>
-                         <Input id="name" placeholder="Enter project name" />
+                        <Label htmlFor="name">Project Name</Label>
+                        <Input id="name" placeholder="Enter project name" />
                     </div>
                     <div className="flex justify-end gap-2">
-                         <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-                         <Button onClick={() => setCreateOpen(false)}>Create Project</Button>
+                        <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+                        <Button onClick={() => setCreateOpen(false)}>Create Project</Button>
                     </div>
                 </div>
             </Modal>
