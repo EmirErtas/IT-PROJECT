@@ -65,14 +65,15 @@ export default function ProjectList() {
                 ))}
 
                 {/* Add New Project Card Placeholder */}
-                variant="outline"
-                className="h-full min-h-[180px] flex flex-col gap-2 border-dashed border-2 hover:border-primary hover:bg-primary/5"
-                onClick={() => setCreateOpen(true)}
+                <Button
+                    variant="outline"
+                    className="h-full min-h-[180px] flex flex-col gap-2 border-dashed border-2 hover:border-primary hover:bg-primary/5"
+                    onClick={() => setCreateOpen(true)}
                 >
-                <Plus className="h-8 w-8" />
-                <span>Create New Project</span>
-            </Button>
-        </div>
+                    <Plus className="h-8 w-8" />
+                    <span>Create New Project</span>
+                </Button>
+            </div>
         </div >
     )
 }
