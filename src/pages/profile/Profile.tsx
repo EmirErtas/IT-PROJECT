@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAuth } from '@/contexts/AuthContext'
 import { User, Mail, Camera } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useToast } from '@/components/ui/use-toast'
 import { supabase } from '@/lib/supabase'
 
@@ -23,6 +23,32 @@ export default function Profile() {
     const { toast } = useToast()
     const [loading, setLoading] = useState(false)
     const [fullName, setFullName] = useState('')
+
+    useEffect(() => {
+        const getProfile = async () => {
+            try {
+                if (!user?.id) return
+
+                const { data, error, status } = await supabase
+                    .from('profiles')
+                    .select('full_name, avatar_url')
+                    .eq('id', user.id)
+                    .single()
+
+                if (error && status !== 406) {
+                    throw error
+                }
+
+                if (data) {
+                    setFullName(data.full_name)
+                }
+            } catch (error) {
+                console.log('Error loading user data!')
+            }
+        }
+
+        getProfile()
+    }, [user])
 
     const handleUpdateProfile = async () => {
         setLoading(true)
