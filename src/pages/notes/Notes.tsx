@@ -50,7 +50,7 @@ export default function Notes() {
 
         if (error) {
             console.error('Error creating note:', error)
-            toast('Failed to create note', 'error')
+            toast(`Failed to create note: ${error.message || error.details || 'Unknown error'}`, 'error')
         } else {
             setNotes([...notes, data[0]])
             setNewNoteTitle('')

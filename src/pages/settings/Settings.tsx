@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { Bell, Moon, Sun, Monitor, Shield, Laptop } from 'lucide-react'
 import { useState } from 'react'
 import { useToast } from '@/components/ui/use-toast'
+import { useTheme } from '@/components/theme-provider'
 
 // Mock Switch Component since we don't have shadcn ui switch yet
 function MockSwitch({ id, checked, onCheckedChange }: { id: string, checked?: boolean, onCheckedChange?: (checked: boolean) => void }) {
@@ -32,6 +33,7 @@ function MockSwitch({ id, checked, onCheckedChange }: { id: string, checked?: bo
 
 export default function Settings() {
     const { toast } = useToast()
+    const { setTheme } = useTheme()
     const [notifications, setNotifications] = useState({ email: true, push: false })
     const [dataSharing, setDataSharing] = useState(true)
 
@@ -68,13 +70,13 @@ export default function Settings() {
                                 <p className="text-sm text-muted-foreground">Select your preferred theme.</p>
                             </div>
                             <div className="flex items-center bg-secondary rounded-lg p-1">
-                                <Button variant="ghost" size="sm" className="h-8 rounded-md bg-background shadow-sm">
+                                <Button variant="ghost" size="sm" className="h-8 rounded-md" onClick={() => setTheme("light")}>
                                     <Sun className="h-4 w-4 mr-2" /> Light
                                 </Button>
-                                <Button variant="ghost" size="sm" className="h-8 rounded-md text-muted-foreground">
+                                <Button variant="ghost" size="sm" className="h-8 rounded-md" onClick={() => setTheme("dark")}>
                                     <Moon className="h-4 w-4 mr-2" /> Dark
                                 </Button>
-                                <Button variant="ghost" size="sm" className="h-8 rounded-md text-muted-foreground">
+                                <Button variant="ghost" size="sm" className="h-8 rounded-md" onClick={() => setTheme("system")}>
                                     <Laptop className="h-4 w-4 mr-2" /> System
                                 </Button>
                             </div>

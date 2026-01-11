@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import { ToastProvider } from '@/components/ui/use-toast'
+import { ThemeProvider } from '@/components/theme-provider'
 import Login from '@/pages/auth/Login'
 import Register from '@/pages/auth/Register'
 import Layout from '@/components/layout/Layout'
@@ -29,75 +30,77 @@ const ProtectedRoute = () => {
 function App() {
   return (
     <AuthProvider>
-      <ToastProvider>
-        <Router>
-          <div className="min-h-screen bg-background font-sans antialiased text-foreground">
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <ToastProvider>
+          <Router>
+            <div className="min-h-screen bg-background font-sans antialiased text-foreground">
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
-              {/* Protected Routes */}
-              <Route element={<ProtectedRoute />}>
-                <Route path="/" element={
-                  <Layout>
-                    <Dashboard />
-                  </Layout>
-                } />
-                <Route path="/kanban" element={
-                  <Layout>
-                    <KanbanBoard />
-                  </Layout>
-                } />
-                <Route path="/pomodoro" element={
-                  <Layout>
-                    <Pomodoro />
-                  </Layout>
-                } />
-                <Route path="/projects" element={
-                  <Layout>
-                    <ProjectList />
-                  </Layout>
-                } />
-                <Route path="/projects/:id" element={
-                  <Layout>
-                    <ProjectDetails />
-                  </Layout>
-                } />
-                <Route path="/analytics" element={
-                  <Layout>
-                    <Analytics />
-                  </Layout>
-                } />
-                <Route path="/tasks/new" element={
-                  <Layout>
-                    <TaskForm />
-                  </Layout>
-                } />
-                <Route path="/calendar" element={
-                  <Layout>
-                    <Calendar />
-                  </Layout>
-                } />
-                <Route path="/notes" element={
-                  <Layout>
-                    <Notes />
-                  </Layout>
-                } />
-                <Route path="/profile" element={
-                  <Layout>
-                    <Profile />
-                  </Layout>
-                } />
-                <Route path="/settings" element={
-                  <Layout>
-                    <Settings />
-                  </Layout>
-                } />
-              </Route>
-            </Routes>
-          </div>
-        </Router>
-      </ToastProvider>
+                {/* Protected Routes */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/" element={
+                    <Layout>
+                      <Dashboard />
+                    </Layout>
+                  } />
+                  <Route path="/kanban" element={
+                    <Layout>
+                      <KanbanBoard />
+                    </Layout>
+                  } />
+                  <Route path="/pomodoro" element={
+                    <Layout>
+                      <Pomodoro />
+                    </Layout>
+                  } />
+                  <Route path="/projects" element={
+                    <Layout>
+                      <ProjectList />
+                    </Layout>
+                  } />
+                  <Route path="/projects/:id" element={
+                    <Layout>
+                      <ProjectDetails />
+                    </Layout>
+                  } />
+                  <Route path="/analytics" element={
+                    <Layout>
+                      <Analytics />
+                    </Layout>
+                  } />
+                  <Route path="/tasks/new" element={
+                    <Layout>
+                      <TaskForm />
+                    </Layout>
+                  } />
+                  <Route path="/calendar" element={
+                    <Layout>
+                      <Calendar />
+                    </Layout>
+                  } />
+                  <Route path="/notes" element={
+                    <Layout>
+                      <Notes />
+                    </Layout>
+                  } />
+                  <Route path="/profile" element={
+                    <Layout>
+                      <Profile />
+                    </Layout>
+                  } />
+                  <Route path="/settings" element={
+                    <Layout>
+                      <Settings />
+                    </Layout>
+                  } />
+                </Route>
+              </Routes>
+            </div>
+          </Router>
+        </ToastProvider>
+      </ThemeProvider>
     </AuthProvider>
   )
 }

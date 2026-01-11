@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
+import { useToast } from '@/components/ui/use-toast'
 
 export type TaskStatus = 'todo' | 'in-progress' | 'done'
 
@@ -20,6 +21,7 @@ export interface Task {
 
 export default function KanbanBoard() {
     const { session } = useAuth()
+    const { toast } = useToast()
     const [tasks, setTasks] = useState<Task[]>([])
     const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false)
     const [newTaskTitle, setNewTaskTitle] = useState('')
@@ -56,10 +58,12 @@ export default function KanbanBoard() {
 
         if (error) {
             console.error('Error creating task:', error)
+            toast(`Failed to create task: ${error.message || error.details || 'Unknown error'}`, 'error')
         } else {
             setTasks([...tasks, data[0] as unknown as Task])
             setNewTaskTitle('')
             setIsAddTaskModalOpen(false)
+            toast('Task created successfully', 'success')
         }
     }
 

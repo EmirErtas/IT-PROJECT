@@ -51,7 +51,7 @@ export default function ProjectList() {
 
         if (error) {
             console.error('Error creating project:', error)
-            toast('Failed to create project', 'error')
+            toast(`Failed to create project: ${error.message || error.details || 'Unknown error'}`, 'error')
         } else {
             setProjects([...projects, data[0]])
             setNewProjectName('')
