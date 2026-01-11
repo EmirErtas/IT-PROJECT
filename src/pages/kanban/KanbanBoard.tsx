@@ -1,15 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus } from 'lucide-react'
 import KanbanColumn from './KanbanColumn'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { Input } from '@/components/ui/input'
-import { Modal } from '@/components/ui/modal'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
-import { useEffect } from 'react'
 
 export type TaskStatus = 'todo' | 'in-progress' | 'done'
 
@@ -19,9 +16,6 @@ export interface Task {
     status: TaskStatus
     priority: 'low' | 'medium' | 'high'
     dueDate?: string
-}
-
-dueDate ?: string
 }
 
 export default function KanbanBoard() {
