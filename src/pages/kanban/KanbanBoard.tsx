@@ -4,7 +4,12 @@ import KanbanColumn from './KanbanColumn'
 import { Button } from '@/components/ui/button'
 import { Modal } from '@/components/ui/modal'
 import { Input } from '@/components/ui/input'
+import { Modal } from '@/components/ui/modal'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/contexts/AuthContext'
+import { useEffect } from 'react'
 
 export type TaskStatus = 'todo' | 'in-progress' | 'done'
 
@@ -16,16 +21,53 @@ export interface Task {
     dueDate?: string
 }
 
-const initialTasks: Task[] = [
-    { id: '1', title: 'Research competitors', status: 'todo', priority: 'medium' },
-    { id: '2', title: 'Design system draft', status: 'todo', priority: 'high', dueDate: '2024-02-10' },
-    { id: '3', title: 'Setup Supabase', status: 'in-progress', priority: 'high' },
-    { id: '4', title: 'Create login page', status: 'done', priority: 'medium' },
-]
+dueDate ?: string
+}
 
 export default function KanbanBoard() {
-    const [tasks, setTasks] = useState<Task[]>(initialTasks)
+    const { session } = useAuth()
+    const [tasks, setTasks] = useState<Task[]>([])
     const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false)
+    const [newTaskTitle, setNewTaskTitle] = useState('')
+
+    useEffect(() => {
+        fetchTasks()
+    }, [session])
+
+    const fetchTasks = async () => {
+        if (!session?.user.id) return
+        const { data, error } = await supabase
+            .from('tasks')
+            .select('*')
+            .eq('user_id', session.user.id)
+
+        if (error) console.error('Error fetching tasks:', error)
+        else setTasks(data as unknown as Task[] || [])
+    }
+
+    const handleCreateTask = async () => {
+        if (!newTaskTitle.trim() || !session?.user.id) return
+
+        const newTask = {
+            title: newTaskTitle,
+            status: 'todo',
+            priority: 'medium',
+            user_id: session.user.id
+        }
+
+        const { data, error } = await supabase
+            .from('tasks')
+            .insert([newTask])
+            .select()
+
+        if (error) {
+            console.error('Error creating task:', error)
+        } else {
+            setTasks([...tasks, data[0] as unknown as Task])
+            setNewTaskTitle('')
+            setIsAddTaskModalOpen(false)
+        }
+    }
 
     const handleDrop = (taskId: string, newStatus: TaskStatus) => {
         setTasks((prev) =>
@@ -75,11 +117,16 @@ export default function KanbanBoard() {
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="title">Task Title</Label>
-                        <Input id="title" placeholder="Enter task title" />
+                        <Input
+                            id="title"
+                            placeholder="Enter task title"
+                            value={newTaskTitle}
+                            onChange={(e) => setNewTaskTitle(e.target.value)}
+                        />
                     </div>
                     <div className="flex justify-end gap-2">
                         <Button variant="outline" onClick={() => setIsAddTaskModalOpen(false)}>Cancel</Button>
-                        <Button onClick={() => setIsAddTaskModalOpen(false)}>Create Task</Button>
+                        <Button onClick={handleCreateTask}>Create Task</Button>
                     </div>
                 </div>
             </Modal>

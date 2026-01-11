@@ -5,18 +5,57 @@ import { Modal } from '@/components/ui/modal'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Folder, MoreHorizontal } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/contexts/AuthContext'
+import { useEffect } from 'react'
 
 // Mock Data
-const projects = [
-    { id: '1', name: 'Website Redesign', description: 'Revamp the corporate website with new branding.', status: 'Active', taskCount: 12 },
-    { id: '2', name: 'Mobile App Beta', description: 'Prepare the mobile app for beta release.', status: 'In Progress', taskCount: 8 },
-    { id: '3', name: 'Q1 Marketing Campaign', description: 'Plan and execute Q1 marketing strategy.', status: 'Planning', taskCount: 5 },
-]
-
 export default function ProjectList() {
     const navigate = useNavigate()
+    const { session } = useAuth()
+    const [projects, setProjects] = useState<any[]>([])
     const [isCreateOpen, setCreateOpen] = useState(false)
+    const [newProjectName, setNewProjectName] = useState('')
+
+    useEffect(() => {
+        fetchProjects()
+    }, [session])
+
+    const fetchProjects = async () => {
+        if (!session?.user.id) return
+        const { data, error } = await supabase
+            .from('projects')
+            .select('*')
+            .eq('user_id', session.user.id)
+
+        if (error) console.error('Error fetching projects:', error)
+        else setProjects(data || [])
+    }
+
+    const handleCreateProject = async () => {
+        if (!newProjectName.trim() || !session?.user.id) return
+
+        const newProject = {
+            name: newProjectName,
+            status: 'active',
+            user_id: session.user.id
+        }
+
+        const { data, error } = await supabase
+            .from('projects')
+            .insert([newProject])
+            .select()
+
+        if (error) {
+            console.error('Error creating project:', error)
+        } else {
+            setProjects([...projects, data[0]])
+            setNewProjectName('')
+            setCreateOpen(false)
+        }
+    }
 
     return (
         <div className="space-y-8">
@@ -83,11 +122,16 @@ export default function ProjectList() {
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">Project Name</Label>
-                        <Input id="name" placeholder="Enter project name" />
+                        <Input
+                            id="name"
+                            placeholder="Enter project name"
+                            value={newProjectName}
+                            onChange={(e) => setNewProjectName(e.target.value)}
+                        />
                     </div>
                     <div className="flex justify-end gap-2">
                         <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-                        <Button onClick={() => setCreateOpen(false)}>Create Project</Button>
+                        <Button onClick={handleCreateProject}>Create Project</Button>
                     </div>
                 </div>
             </Modal>

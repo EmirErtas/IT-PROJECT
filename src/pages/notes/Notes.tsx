@@ -5,16 +5,56 @@ import { useState } from 'react'
 import { Modal } from '@/components/ui/modal'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-
-const initialNotes = [
-    { id: 1, title: 'Meeting Notes', content: 'Discuss Q1 goals and marketing strategy.', color: 'bg-yellow-100 dark:bg-yellow-900/30' },
-    { id: 2, title: 'Grocery List', content: '- Milk\n- Eggs\n- Bread\n- Coffee', color: 'bg-blue-100 dark:bg-blue-900/30' },
-    { id: 3, title: 'Project Ideas', content: 'FocusFlow: A new way to manage productivity. Needs a cool logo.', color: 'bg-green-100 dark:bg-green-900/30' },
-]
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/contexts/AuthContext'
+import { useEffect } from 'react'
 
 export default function Notes() {
-    const [notes] = useState(initialNotes)
+    const { session } = useAuth()
+    const [notes, setNotes] = useState<any[]>([])
     const [isAddNoteOpen, setAddNoteOpen] = useState(false)
+    const [newNoteTitle, setNewNoteTitle] = useState('')
+    const [newNoteContent, setNewNoteContent] = useState('')
+
+    useEffect(() => {
+        fetchNotes()
+    }, [session])
+
+    const fetchNotes = async () => {
+        if (!session?.user.id) return
+        const { data, error } = await supabase
+            .from('notes')
+            .select('*')
+            .eq('user_id', session.user.id)
+
+        if (error) console.error('Error fetching notes:', error)
+        else setNotes(data || [])
+    }
+
+    const handleCreateNote = async () => {
+        if (!newNoteTitle.trim() || !session?.user.id) return
+
+        const newNote = {
+            title: newNoteTitle,
+            content: newNoteContent,
+            color: 'bg-yellow-100', // Default color
+            user_id: session.user.id
+        }
+
+        const { data, error } = await supabase
+            .from('notes')
+            .insert([newNote])
+            .select()
+
+        if (error) {
+            console.error('Error creating note:', error)
+        } else {
+            setNotes([...notes, data[0]])
+            setNewNoteTitle('')
+            setNewNoteContent('')
+            setAddNoteOpen(false)
+        }
+    }
 
     return (
         <div className="space-y-6">
@@ -64,15 +104,25 @@ export default function Notes() {
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="note-title">Title</Label>
-                        <Input id="note-title" placeholder="Note title" />
+                        <Input
+                            id="note-title"
+                            placeholder="Note title"
+                            value={newNoteTitle}
+                            onChange={(e) => setNewNoteTitle(e.target.value)}
+                        />
                     </div>
                     <div className="space-y-2">
                         <Label htmlFor="note-content">Content</Label>
-                        <textarea className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" placeholder="Note content..." />
+                        <textarea
+                            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="Note content..."
+                            value={newNoteContent}
+                            onChange={(e) => setNewNoteContent(e.target.value)}
+                        />
                     </div>
                     <div className="flex justify-end gap-2">
                         <Button variant="outline" onClick={() => setAddNoteOpen(false)}>Cancel</Button>
-                        <Button onClick={() => setAddNoteOpen(false)}>Create Note</Button>
+                        <Button onClick={handleCreateNote}>Create Note</Button>
                     </div>
                 </div>
             </Modal>
