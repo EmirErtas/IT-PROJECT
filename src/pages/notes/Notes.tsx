@@ -15,8 +15,9 @@ export default function Notes() {
     const { toast } = useToast()
     const [notes, setNotes] = useState<any[]>([])
     const [isAddNoteOpen, setAddNoteOpen] = useState(false)
-    const [newNoteTitle, setNewNoteTitle] = useState('')
-    const [newNoteContent, setNewNoteContent] = useState('')
+    const [editingNote, setEditingNote] = useState<any>(null)
+    const [title, setTitle] = useState('')
+    const [content, setContent] = useState('')
 
     useEffect(() => {
         fetchNotes()
@@ -33,31 +34,79 @@ export default function Notes() {
         else setNotes(data || [])
     }
 
-    const handleCreateNote = async () => {
-        if (!newNoteTitle.trim() || !session?.user.id) return
+    const handleSaveNote = async () => {
+        if (!title.trim() || !session?.user.id) return
 
-        const newNote = {
-            title: newNoteTitle,
-            content: newNoteContent,
-            color: 'bg-yellow-100', // Default color
-            user_id: session.user.id
+        if (editingNote) {
+            // Update existing note
+            const { error } = await supabase
+                .from('notes')
+                .update({ title, content })
+                .eq('id', editingNote.id)
+
+            if (error) {
+                console.error('Error updating note:', error)
+                toast(`Failed to update note: ${error.message}`, 'error')
+            } else {
+                setNotes(notes.map(n => n.id === editingNote.id ? { ...n, title, content } : n))
+                closeModal()
+                toast('Note updated successfully', 'success')
+            }
+        } else {
+            // Create new note
+            const newNote = {
+                title,
+                content,
+                color: 'bg-yellow-100', // Default color
+                user_id: session.user.id
+            }
+
+            const { data, error } = await supabase
+                .from('notes')
+                .insert([newNote])
+                .select()
+
+            if (error) {
+                console.error('Error creating note:', error)
+                toast(`Failed to create note: ${error.message || error.details || 'Unknown error'}`, 'error')
+            } else {
+                setNotes([...notes, data[0]])
+                closeModal()
+                toast('Note created successfully', 'success')
+            }
         }
+    }
 
-        const { data, error } = await supabase
+    const handleDeleteNote = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation() // Prevent card click if any
+        if (!confirm('Are you sure you want to delete this note?')) return
+
+        const { error } = await supabase
             .from('notes')
-            .insert([newNote])
-            .select()
+            .delete()
+            .eq('id', id)
 
         if (error) {
-            console.error('Error creating note:', error)
-            toast(`Failed to create note: ${error.message || error.details || 'Unknown error'}`, 'error')
+            console.error('Error deleting note:', error)
+            toast(`Failed to delete note: ${error.message}`, 'error')
         } else {
-            setNotes([...notes, data[0]])
-            setNewNoteTitle('')
-            setNewNoteContent('')
-            setAddNoteOpen(false)
-            toast('Note created successfully', 'success')
+            setNotes(notes.filter(n => n.id !== id))
+            toast('Note deleted successfully', 'success')
         }
+    }
+
+    const openEditModal = (note: any) => {
+        setEditingNote(note)
+        setTitle(note.title)
+        setContent(note.content)
+        setAddNoteOpen(true)
+    }
+
+    const closeModal = () => {
+        setEditingNote(null)
+        setTitle('')
+        setContent('')
+        setAddNoteOpen(false)
     }
 
     return (
@@ -66,6 +115,7 @@ export default function Notes() {
                 <div>
                     <h2 className="text-3xl font-bold tracking-tight">Notes</h2>
                     <p className="text-muted-foreground">Capture your ideas and to-dos.</p>
+                </div>
                 </div>
                 <Button onClick={() => setAddNoteOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" /> New Note
@@ -78,10 +128,20 @@ export default function Notes() {
                         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                             <CardTitle className="text-lg font-semibold">{note.title}</CardTitle>
                             <div className="flex gap-1">
-                                <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-black/10 dark:hover:bg-white/10">
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-6 w-6 hover:bg-black/10 dark:hover:bg-white/10"
+                                    onClick={() => openEditModal(note)}
+                                >
                                     <Edit2 className="h-3 w-3" />
                                 </Button>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 hover:bg-red-500/20 text-destructive">
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    className="h-6 w-6 hover:bg-red-500/20 text-destructive"
+                                    onClick={(e) => handleDeleteNote(note.id, e)}
+                                >
                                     <Trash2 className="h-3 w-3" />
                                 </Button>
                             </div>
@@ -104,15 +164,15 @@ export default function Notes() {
                 </button>
             </div>
 
-            <Modal isOpen={isAddNoteOpen} onClose={() => setAddNoteOpen(false)} title="New Note">
+            <Modal isOpen={isAddNoteOpen} onClose={closeModal} title={editingNote ? "Edit Note" : "New Note"}>
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="note-title">Title</Label>
                         <Input
                             id="note-title"
                             placeholder="Note title"
-                            value={newNoteTitle}
-                            onChange={(e) => setNewNoteTitle(e.target.value)}
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                         />
                     </div>
                     <div className="space-y-2">
@@ -120,13 +180,13 @@ export default function Notes() {
                         <textarea
                             className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                             placeholder="Note content..."
-                            value={newNoteContent}
-                            onChange={(e) => setNewNoteContent(e.target.value)}
+                            value={content}
+                            onChange={(e) => setContent(e.target.value)}
                         />
                     </div>
                     <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setAddNoteOpen(false)}>Cancel</Button>
-                        <Button onClick={handleCreateNote}>Create Note</Button>
+                        <Button variant="outline" onClick={closeModal}>Cancel</Button>
+                        <Button onClick={handleSaveNote}>{editingNote ? "Save Changes" : "Create Note"}</Button>
                     </div>
                 </div>
             </Modal>

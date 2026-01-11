@@ -5,7 +5,7 @@ import { Modal } from '@/components/ui/modal'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, Folder, MoreHorizontal } from 'lucide-react'
+import { Plus, Folder, Trash2, Edit2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
@@ -18,7 +18,8 @@ export default function ProjectList() {
     const { toast } = useToast()
     const [projects, setProjects] = useState<any[]>([])
     const [isCreateOpen, setCreateOpen] = useState(false)
-    const [newProjectName, setNewProjectName] = useState('')
+    const [editingProject, setEditingProject] = useState<any>(null)
+    const [projectName, setProjectName] = useState('')
 
     useEffect(() => {
         fetchProjects()
@@ -35,29 +36,77 @@ export default function ProjectList() {
         else setProjects(data || [])
     }
 
-    const handleCreateProject = async () => {
-        if (!newProjectName.trim() || !session?.user.id) return
+    const handleSaveProject = async () => {
+        if (!projectName.trim() || !session?.user.id) return
 
-        const newProject = {
-            name: newProjectName,
-            status: 'active',
-            user_id: session.user.id
+        if (editingProject) {
+            // Update
+            const { error } = await supabase
+                .from('projects')
+                .update({ name: projectName })
+                .eq('id', editingProject.id)
+
+            if (error) {
+                console.error('Error updating project:', error)
+                toast(`Failed to update project: ${error.message}`, 'error')
+            } else {
+                setProjects(projects.map(p => p.id === editingProject.id ? { ...p, name: projectName } : p))
+                closeModal()
+                toast('Project updated successfully', 'success')
+            }
+        } else {
+            // Create
+            const newProject = {
+                name: projectName,
+                status: 'active',
+                user_id: session.user.id
+            }
+
+            const { data, error } = await supabase
+                .from('projects')
+                .insert([newProject])
+                .select()
+
+            if (error) {
+                console.error('Error creating project:', error)
+                toast(`Failed to create project: ${error.message || error.details || 'Unknown error'}`, 'error')
+            } else {
+                setProjects([...projects, data[0]])
+                closeModal()
+                toast('Project created successfully', 'success')
+            }
         }
+    }
 
-        const { data, error } = await supabase
+    const handleDeleteProject = async (id: string, e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (!confirm('Are you sure you want to delete this project?')) return
+
+        const { error } = await supabase
             .from('projects')
-            .insert([newProject])
-            .select()
+            .delete()
+            .eq('id', id)
 
         if (error) {
-            console.error('Error creating project:', error)
-            toast(`Failed to create project: ${error.message || error.details || 'Unknown error'}`, 'error')
+            console.error('Error deleting project:', error)
+            toast(`Failed to delete project: ${error.message}`, 'error')
         } else {
-            setProjects([...projects, data[0]])
-            setNewProjectName('')
-            setCreateOpen(false)
-            toast('Project created successfully', 'success')
+            setProjects(projects.filter(p => p.id !== id))
+            toast('Project deleted successfully', 'success')
         }
+    }
+
+    const openEditModal = (project: any, e: React.MouseEvent) => {
+        e.stopPropagation()
+        setEditingProject(project)
+        setProjectName(project.name)
+        setCreateOpen(true)
+    }
+
+    const closeModal = () => {
+        setEditingProject(null)
+        setProjectName('')
+        setCreateOpen(false)
     }
 
     return (
@@ -89,9 +138,24 @@ export default function ProjectList() {
                                     <CardDescription className="line-clamp-1 mt-1">{project.description}</CardDescription>
                                 </div>
                             </div>
-                            <Button variant="ghost" size="icon" className="-mt-2">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
+                            <div className="flex gap-1">
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 hover:bg-black/10 dark:hover:bg-white/10"
+                                    onClick={(e) => openEditModal(project, e)}
+                                >
+                                    <Edit2 className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 hover:bg-red-500/20 text-destructive"
+                                    onClick={(e) => handleDeleteProject(project.id, e)}
+                                >
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
                         </CardHeader>
                         <CardContent className="mt-4">
                             <div className="flex justify-between items-center text-sm text-muted-foreground">
@@ -121,20 +185,20 @@ export default function ProjectList() {
             </div>
 
 
-            <Modal isOpen={isCreateOpen} onClose={() => setCreateOpen(false)} title="New Project">
+            <Modal isOpen={isCreateOpen} onClose={closeModal} title={editingProject ? "Edit Project" : "New Project"}>
                 <div className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">Project Name</Label>
                         <Input
                             id="name"
                             placeholder="Enter project name"
-                            value={newProjectName}
-                            onChange={(e) => setNewProjectName(e.target.value)}
+                            value={projectName}
+                            onChange={(e) => setProjectName(e.target.value)}
                         />
                     </div>
                     <div className="flex justify-end gap-2">
-                        <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-                        <Button onClick={handleCreateProject}>Create Project</Button>
+                        <Button variant="outline" onClick={closeModal}>Cancel</Button>
+                        <Button onClick={handleSaveProject}>{editingProject ? "Save Changes" : "Create Project"}</Button>
                     </div>
                 </div>
             </Modal>
