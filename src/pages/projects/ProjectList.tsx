@@ -1,6 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { Modal } from '@/components/ui/modal'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Folder, MoreHorizontal } from 'lucide-react'
 
@@ -74,6 +77,20 @@ export default function ProjectList() {
                     <span>Create New Project</span>
                 </Button>
             </div>
+            </div>
+
+            <Modal isOpen={isCreateOpen} onClose={() => setCreateOpen(false)} title="New Project">
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                         <Label htmlFor="name">Project Name</Label>
+                         <Input id="name" placeholder="Enter project name" />
+                    </div>
+                    <div className="flex justify-end gap-2">
+                         <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+                         <Button onClick={() => setCreateOpen(false)}>Create Project</Button>
+                    </div>
+                </div>
+            </Modal>
         </div >
     )
 }
