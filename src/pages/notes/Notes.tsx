@@ -8,9 +8,11 @@ import { Label } from '@/components/ui/label'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
+import { useToast } from '@/components/ui/use-toast'
 
 export default function Notes() {
     const { session } = useAuth()
+    const { toast } = useToast()
     const [notes, setNotes] = useState<any[]>([])
     const [isAddNoteOpen, setAddNoteOpen] = useState(false)
     const [newNoteTitle, setNewNoteTitle] = useState('')
@@ -48,11 +50,13 @@ export default function Notes() {
 
         if (error) {
             console.error('Error creating note:', error)
+            toast('Failed to create note', 'error')
         } else {
             setNotes([...notes, data[0]])
             setNewNoteTitle('')
             setNewNoteContent('')
             setAddNoteOpen(false)
+            toast('Note created successfully', 'success')
         }
     }
 

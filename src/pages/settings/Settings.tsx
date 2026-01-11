@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Bell, Moon, Sun, Monitor, Shield, Laptop } from 'lucide-react'
+import { useState } from 'react'
+import { useToast } from '@/components/ui/use-toast'
 
 // Mock Switch Component since we don't have shadcn ui switch yet
 function MockSwitch({ id, checked, onCheckedChange }: { id: string, checked?: boolean, onCheckedChange?: (checked: boolean) => void }) {
@@ -29,6 +31,19 @@ function MockSwitch({ id, checked, onCheckedChange }: { id: string, checked?: bo
 
 
 export default function Settings() {
+    const { toast } = useToast()
+    const [notifications, setNotifications] = useState({ email: true, push: false })
+    const [dataSharing, setDataSharing] = useState(true)
+
+    const handleToggle = (key: string, value: boolean) => {
+        if (key === 'email' || key === 'push') {
+            setNotifications(prev => ({ ...prev, [key]: value }))
+        } else if (key === 'dataSharing') {
+            setDataSharing(value)
+        }
+        toast('Settings updated successfully', 'success')
+    }
+
     return (
         <div className="space-y-8 max-w-4xl mx-auto">
             <div>
@@ -82,14 +97,22 @@ export default function Settings() {
                                 <Label htmlFor="email-notifications">Email Notifications</Label>
                                 <p className="text-sm text-muted-foreground">Receive daily digests and important updates.</p>
                             </div>
-                            <MockSwitch id="email-notifications" checked={true} />
+                            <MockSwitch
+                                id="email-notifications"
+                                checked={notifications.email}
+                                onCheckedChange={(checked) => handleToggle('email', checked)}
+                            />
                         </div>
                         <div className="flex items-center justify-between">
                             <div className="space-y-0.5">
                                 <Label htmlFor="push-notifications">Push Notifications</Label>
                                 <p className="text-sm text-muted-foreground">Receive real-time alerts for tasks and messages.</p>
                             </div>
-                            <MockSwitch id="push-notifications" checked={false} />
+                            <MockSwitch
+                                id="push-notifications"
+                                checked={notifications.push}
+                                onCheckedChange={(checked) => handleToggle('push', checked)}
+                            />
                         </div>
                     </CardContent>
                 </Card>
@@ -109,7 +132,11 @@ export default function Settings() {
                                 <Label htmlFor="data-sharing">Share Usage Data</Label>
                                 <p className="text-sm text-muted-foreground">Help us improve FocusFlow by sharing anonymous usage data.</p>
                             </div>
-                            <MockSwitch id="data-sharing" checked={true} />
+                            <MockSwitch
+                                id="data-sharing"
+                                checked={dataSharing}
+                                onCheckedChange={(checked) => handleToggle('dataSharing', checked)}
+                            />
                         </div>
                         <div className="pt-4 flex justify-end">
                             <Button variant="outline" className="text-destructive hover:bg-destructive/10">Delete Account</Button>

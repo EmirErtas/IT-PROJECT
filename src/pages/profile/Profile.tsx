@@ -5,6 +5,9 @@ import { Label } from '@/components/ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useAuth } from '@/contexts/AuthContext'
 import { User, Mail, Camera } from 'lucide-react'
+import { useState } from 'react'
+import { useToast } from '@/components/ui/use-toast'
+import { supabase } from '@/lib/supabase'
 
 // Mock Avatar Component since we don't have the shadcn ui avatar yet
 function MockAvatar({ fallback }: { fallback: string }) {
@@ -17,6 +20,30 @@ function MockAvatar({ fallback }: { fallback: string }) {
 
 export default function Profile() {
     const { user } = useAuth()
+    const { toast } = useToast()
+    const [loading, setLoading] = useState(false)
+    const [fullName, setFullName] = useState('')
+
+    const handleUpdateProfile = async () => {
+        setLoading(true)
+        // In a real app we'd update a 'profiles' table or auth metadata
+        // For now let's just simulate it or update auth metadata if needed
+        try {
+            const { error } = await supabase.from('profiles').upsert({
+                id: user?.id,
+                full_name: fullName,
+                updated_at: new Date().toISOString(),
+            })
+
+            if (error) throw error
+            toast('Profile updated successfully', 'success')
+        } catch (error) {
+            console.error(error)
+            toast('Failed to update profile', 'error')
+        } finally {
+            setLoading(false)
+        }
+    }
 
     return (
         <div className="space-y-8 max-w-4xl mx-auto">
@@ -52,7 +79,13 @@ export default function Profile() {
                                 <Label htmlFor="name">Full Name</Label>
                                 <div className="relative">
                                     <User className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input id="name" placeholder="John Doe" className="pl-9" />
+                                    <Input
+                                        id="name"
+                                        placeholder="John Doe"
+                                        className="pl-9"
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
+                                    />
                                 </div>
                             </div>
                             <div className="grid gap-2">
@@ -63,7 +96,9 @@ export default function Profile() {
                                 </div>
                             </div>
                             <div className="flex justify-end">
-                                <Button>Save Changes</Button>
+                                <Button onClick={handleUpdateProfile} disabled={loading}>
+                                    {loading ? 'Saving...' : 'Save Changes'}
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>

@@ -9,11 +9,13 @@ import { Plus, Folder, MoreHorizontal } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
+import { useToast } from '@/components/ui/use-toast'
 
 // Mock Data
 export default function ProjectList() {
     const navigate = useNavigate()
     const { session } = useAuth()
+    const { toast } = useToast()
     const [projects, setProjects] = useState<any[]>([])
     const [isCreateOpen, setCreateOpen] = useState(false)
     const [newProjectName, setNewProjectName] = useState('')
@@ -49,10 +51,12 @@ export default function ProjectList() {
 
         if (error) {
             console.error('Error creating project:', error)
+            toast('Failed to create project', 'error')
         } else {
             setProjects([...projects, data[0]])
             setNewProjectName('')
             setCreateOpen(false)
+            toast('Project created successfully', 'success')
         }
     }
 
