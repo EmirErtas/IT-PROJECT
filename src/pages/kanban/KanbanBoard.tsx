@@ -22,6 +22,7 @@ const initialTasks: Task[] = [
 
 export default function KanbanBoard() {
     const [tasks, setTasks] = useState<Task[]>(initialTasks)
+    const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false)
 
     const handleDrop = (taskId: string, newStatus: TaskStatus) => {
         setTasks((prev) =>
@@ -38,7 +39,7 @@ export default function KanbanBoard() {
                     <h2 className="text-3xl font-bold tracking-tight">Kanban</h2>
                     <p className="text-muted-foreground">Manage your tasks by dragging them across columns.</p>
                 </div>
-                <Button>
+                <Button onClick={() => setIsAddTaskModalOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" /> New Task
                 </Button>
             </div>
