@@ -1,4 +1,4 @@
-```javascript
+
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import Login from '@/pages/auth/Login'
@@ -33,63 +33,63 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
+
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={
-                  <Layout> 
-                    <Dashboard /> 
-                  </Layout>
+                <Layout>
+                  <Dashboard />
+                </Layout>
               } />
               <Route path="/kanban" element={
-                  <Layout> 
-                    <KanbanBoard /> 
-                  </Layout>
+                <Layout>
+                  <KanbanBoard />
+                </Layout>
               } />
               <Route path="/pomodoro" element={
-                  <Layout>
-                    <Pomodoro />
-                  </Layout>
+                <Layout>
+                  <Pomodoro />
+                </Layout>
               } />
               <Route path="/projects" element={
-                  <Layout>
-                    <ProjectList />
-                  </Layout>
+                <Layout>
+                  <ProjectList />
+                </Layout>
               } />
               <Route path="/projects/:id" element={
-                  <Layout>
-                    <ProjectDetails />
-                  </Layout>
+                <Layout>
+                  <ProjectDetails />
+                </Layout>
               } />
               <Route path="/analytics" element={
-                  <Layout>
-                    <Analytics />
-                  </Layout>
+                <Layout>
+                  <Analytics />
+                </Layout>
               } />
               <Route path="/tasks/new" element={
-                  <Layout> 
-                    <TaskForm /> 
-                  </Layout>
+                <Layout>
+                  <TaskForm />
+                </Layout>
               } />
               <Route path="/calendar" element={
-                  <Layout>
-                    <Calendar />
-                  </Layout>
+                <Layout>
+                  <Calendar />
+                </Layout>
               } />
               <Route path="/notes" element={
-                  <Layout>
-                    <Notes />
-                  </Layout>
+                <Layout>
+                  <Notes />
+                </Layout>
               } />
               <Route path="/profile" element={
-                  <Layout> 
-                    <Profile /> 
-                  </Layout>
+                <Layout>
+                  <Profile />
+                </Layout>
               } />
               <Route path="/settings" element={
-                  <Layout>
-                    <Settings />
-                  </Layout>
+                <Layout>
+                  <Settings />
+                </Layout>
               } />
             </Route>
           </Routes>
@@ -100,4 +100,4 @@ function App() {
 }
 
 export default App
-```
+

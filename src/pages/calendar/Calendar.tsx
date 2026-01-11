@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
@@ -43,10 +43,10 @@ export default function Calendar() {
             days.push(
                 <div key={i} className="h-24 md:h-32 border border-muted-foreground/20 p-2 relative group hover:bg-muted/30 transition-colors">
                     <span className={`text-sm font-medium ${i === new Date().getDate() &&
-                            currentDate.getMonth() === new Date().getMonth() &&
-                            currentDate.getFullYear() === new Date().getFullYear()
-                            ? 'bg-primary text-primary-foreground h-6 w-6 rounded-full flex items-center justify-center'
-                            : 'text-muted-foreground'
+                        currentDate.getMonth() === new Date().getMonth() &&
+                        currentDate.getFullYear() === new Date().getFullYear()
+                        ? 'bg-primary text-primary-foreground h-6 w-6 rounded-full flex items-center justify-center'
+                        : 'text-muted-foreground'
                         }`}>
                         {i}
                     </span>

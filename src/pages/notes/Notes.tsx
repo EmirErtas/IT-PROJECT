@@ -10,7 +10,7 @@ const initialNotes = [
 ]
 
 export default function Notes() {
-    const [notes, setNotes] = useState(initialNotes)
+    const [notes] = useState(initialNotes)
 
     return (
         <div className="space-y-6">
