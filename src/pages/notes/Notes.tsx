@@ -116,7 +116,7 @@ export default function Notes() {
                     <h2 className="text-3xl font-bold tracking-tight">Notes</h2>
                     <p className="text-muted-foreground">Capture your ideas and to-dos.</p>
                 </div>
-                </div>
+
                 <Button onClick={() => setAddNoteOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" /> New Note
                 </Button>
@@ -128,17 +128,17 @@ export default function Notes() {
                         <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                             <CardTitle className="text-lg font-semibold">{note.title}</CardTitle>
                             <div className="flex gap-1">
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
                                     className="h-6 w-6 hover:bg-black/10 dark:hover:bg-white/10"
                                     onClick={() => openEditModal(note)}
                                 >
                                     <Edit2 className="h-3 w-3" />
                                 </Button>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
                                     className="h-6 w-6 hover:bg-red-500/20 text-destructive"
                                     onClick={(e) => handleDeleteNote(note.id, e)}
                                 >
