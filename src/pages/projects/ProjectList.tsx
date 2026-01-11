@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Plus, Folder, MoreHorizontal } from 'lucide-react'
@@ -12,6 +13,7 @@ const projects = [
 
 export default function ProjectList() {
     const navigate = useNavigate()
+    const [isCreateOpen, setCreateOpen] = useState(false)
 
     return (
         <div className="space-y-8">
@@ -20,7 +22,7 @@ export default function ProjectList() {
                     <h2 className="text-3xl font-bold tracking-tight">Projects</h2>
                     <p className="text-muted-foreground">Manage and track your projects.</p>
                 </div>
-                <Button>
+                <Button onClick={() => setCreateOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" /> New Project
                 </Button>
             </div>
@@ -63,15 +65,14 @@ export default function ProjectList() {
                 ))}
 
                 {/* Add New Project Card Placeholder */}
-                <Button
-                    variant="outline"
-                    className="h-full min-h-[180px] flex flex-col gap-2 border-dashed border-2 hover:border-primary hover:bg-primary/5"
-                    onClick={() => { }}
+                variant="outline"
+                className="h-full min-h-[180px] flex flex-col gap-2 border-dashed border-2 hover:border-primary hover:bg-primary/5"
+                onClick={() => setCreateOpen(true)}
                 >
-                    <Plus className="h-8 w-8" />
-                    <span>Create New Project</span>
-                </Button>
-            </div>
+                <Plus className="h-8 w-8" />
+                <span>Create New Project</span>
+            </Button>
         </div>
+        </div >
     )
 }

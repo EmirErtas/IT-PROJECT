@@ -11,6 +11,7 @@ const initialNotes = [
 
 export default function Notes() {
     const [notes] = useState(initialNotes)
+    const [isAddNoteOpen, setAddNoteOpen] = useState(false)
 
     return (
         <div className="space-y-6">
@@ -19,7 +20,7 @@ export default function Notes() {
                     <h2 className="text-3xl font-bold tracking-tight">Notes</h2>
                     <p className="text-muted-foreground">Capture your ideas and to-dos.</p>
                 </div>
-                <Button>
+                <Button onClick={() => setAddNoteOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" /> New Note
                 </Button>
             </div>
@@ -45,7 +46,10 @@ export default function Notes() {
                 ))}
 
                 {/* Create New Note Card */}
-                <button className="flex flex-col items-center justify-center h-full min-h-[200px] border-2 border-dashed border-muted-foreground/25 rounded-xl hover:border-primary hover:bg-primary/5 transition-all group">
+                <button
+                    className="flex flex-col items-center justify-center h-full min-h-[200px] border-2 border-dashed border-muted-foreground/25 rounded-xl hover:border-primary hover:bg-primary/5 transition-all group"
+                    onClick={() => setAddNoteOpen(true)}
+                >
                     <div className="h-12 w-12 rounded-full bg-muted group-hover:bg-primary/20 flex items-center justify-center transition-colors">
                         <Plus className="h-6 w-6 text-muted-foreground group-hover:text-primary" />
                     </div>
